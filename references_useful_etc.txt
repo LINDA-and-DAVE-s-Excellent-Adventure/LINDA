@@ -1,0 +1,5 @@
+I used this to help setup the RP2040 develeopment environment: https://www.digikey.com/en/maker/projects/raspberry-pi-pico-and-rp2040-cc-part-1-blink-and-vs-code/7102fb8bca95452e9df6150f39ae8422
+
+^^^ That will install the Pico SDK which allows us to write Arduino-style code for the RP2040
+
+
