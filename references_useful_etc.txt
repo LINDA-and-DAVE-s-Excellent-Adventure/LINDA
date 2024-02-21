@@ -1,5 +1,21 @@
 I used this to help setup the RP2040 develeopment environment: https://www.digikey.com/en/maker/projects/raspberry-pi-pico-and-rp2040-cc-part-1-blink-and-vs-code/7102fb8bca95452e9df6150f39ae8422
+-- includes installing Pi Pico SDK, setting up VSCode CMakeLists etc
 
-^^^ That will install the Pico SDK which allows us to write Arduino-style code for the RP2040
+https://learn.sparkfun.com/tutorials/rp2040-thing-plus-hookup-guide/all
 
+-- SDK pdfs
+https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf
+https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf
+
+https://github.com/raspberrypi/pico-sdk
+https://github.com/raspberrypi/pico-examples
+
+online:
+https://www.raspberrypi.com/documentation/pico-sdk/
+https://github.com/raspberrypi/pico-project-generator
+
+https://www.sparkfun.com/products/17745
+
+https://www.omnicalculator.com/other/hamming-code
+https://en.wikipedia.org/wiki/Hamming_code
 
