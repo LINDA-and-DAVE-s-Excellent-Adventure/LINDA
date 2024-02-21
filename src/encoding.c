@@ -1,26 +1,33 @@
 #include "encoding.h"
+#include <stdio.h>
 
-void encode_hamming7_4(const uint8_t *data, int data_length, uint8_t *codeword) {
+void encode_hamming7_4(const char *text, int data_length, uint8_t *codeword) {
     int i, j = 0;
+    printf("Beginning to encode %s\n", text);
 
     for(i=0; i<data_length; ++i) {
-        // Extract 4 data bits
-        uint8_t data_bits = (data[i] >> 4) & 0x0F;
+        // Process each character in the text as a byte
+        uint8_t byte = text[i];
 
-        // Calculate parity bits (assuming positions 1, 2, 4 are parity)
-        int p1 = (data_bits & 0x05) + (data_bits & 0x0C); // Covers bits 2,4,6
-        int p2 = (data_bits & 0x02) + (data_bits & 0x0C); // Covers bits 1,4,6
-        int p3 = (data_bits & 0x01) + (data_bits & 0x03); // Covers bits 0,1,2
+        // Conver the character byte into binary data bits
+        for(int bit=7; bit>-1; --bit) {
+            uint8_t data_bit = (byte >> bit) & 0x01;
+            printf("Processing byte: %u -- bit %d: %u\n", byte, bit, data_bit);
 
-        // Place parity bits (convert integers 0/1 to bits)
-        codeword[j++] = (p1 % 2) + '0';  
-        codeword[j++] = (p2 % 2) + '0'; 
-        codeword[j++] = data_bits & 0x08; // Extract and move data bit D3
-        codeword[j++] = (p3 % 2) + '0';  
-        codeword[j++] = data_bits & 0x04; 
-        codeword[j++] = data_bits & 0x02;  
-        codeword[j++] = data_bits & 0x01;
+            // Calculate parity bits (assuming positions 1, 2, 4 are parity)
+            int p1 = (data_bit & 0x01) + ((byte >> 2) & 0x01)  + ((byte >> 4) & 0x01);
+            int p2 = ((byte >> 1) & 0x01) + ((byte >> 4) & 0x01) + ((byte >> 6) & 0x01);
+            int p3 = data_bit + ((byte >> 1) & 0x01) + ((byte >> 3) & 0x01); 
+
+            // Place parity bits and the processed data bit
+            codeword[j++] = (p1 % 2) + '0';  
+            codeword[j++] = (p2 % 2) + '0'; 
+            codeword[j++] = data_bit + '0'; // Insert data bit directly
+            codeword[j++] = (p3 % 2) + '0';
+        }
+        printf("**** Done with %s\n", text[i]);
     }
+    return;
 }
 
 void decode_hamming7_4(const uint8_t *codeword, int codeword_length, uint8_t *data) {

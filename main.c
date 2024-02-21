@@ -2,55 +2,60 @@
 #include <string.h>
 
 #include "pico/stdlib.h"
-#include "hardware/pio.h"
 
 // LINDA Libraries
-#include "encoding.h"
-#include "laser_transmit.h"
+#include "include/encoding.h"
+#include "include/laser_transmit.h"
 
 
 const uint led_pin = 25;
-const uint laser_pin = 16;
-const uint rgb_pin = 8;
+const uint rx_pin = 16;
+const uint tx_pin = 17;
+const uint switch_pin = 18;
+
+const char *message = "Hello world!";
 
 // Set up GPIO etc
 void setup() {
     gpio_init(led_pin);
-    gpio_init(laser_pin);
-    gpio_init(rgb_pin);
+    gpio_init(rx_pin);
+    gpio_init(tx_pin);
+    gpio_init(switch_pin);
 
     gpio_set_dir(led_pin, GPIO_OUT);
-    gpio_set_dir(laser_pin, GPIO_IN);
-    gpio_set_dir(rgb_pin, GPIO_OUT);
+    gpio_set_dir(tx_pin, GPIO_OUT);
+    gpio_set_dir(rx_pin, GPIO_IN);
+    gpio_set_dir(switch_pin, GPIO_IN);
 }
 
 int main() {
-    // Initialize controller pins
+    // Initialize controller pins and serial port
     setup();
 
-    // Initialize chosen serial port
-    stdio_init_all();
-
-    // Example data to transmit over laser link
-    const char *send_data = "Hello world!";
-    int data_length = strlen(send_data);
-
-    int encoded_length = (data_length * 7 + 3) / 4;
-    uint8_t encoded_data[encoded_length];
-
-    encode_hamming7_4((const uint8_t *)send_data, data_length, encoded_data);
-    printf(encoded_data);
+    stdio_init_all();    
 
     // Loop forever
     while (true) {
-        // Laser signal is HIGH when no laser detected, LOW when laser detected
-        if(!gpio_get(laser_pin)) {
-            gpio_put(led_pin, true);
-            // printf("AH!\n");
+        printf("Hello!");
+        // Check switch_pin to see if we're in Tx or Rx mode
+        if(!gpio_get(switch_pin)) {
+            // Transmit mode
+            // Example data to transmit over laser link
+            int message_length = strlen(message);
+            uint8_t codeword[message_length * 7]; // Worst case each char takes 7 bits of codeword
+            encode_hamming7_4(message, message_length, codeword);
+            printf("Message: %s\nLength: %d\nint8_t encoded data: %u\n", message, message_length, codeword);
         } else {
-            gpio_put(led_pin, false);
-            // printf("Nothing\n"); 
+            // Receive mode
+            // Laser signal is HIGH when no laser detected, LOW when laser detected
+            if(!gpio_get(rx_pin)) {
+                gpio_put(led_pin, true);
+                // printf("AH!\n");
+            } else {
+                gpio_put(led_pin, false);
+                // printf("Nothing\n"); 
+            }
+            sleep_ms(50);
         }
-        sleep_ms(50);
     }
 }

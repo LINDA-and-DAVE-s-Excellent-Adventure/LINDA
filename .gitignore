@@ -55,6 +55,3 @@ dkms.conf
 # Ignore everything in the build directory
 build/
 build/*
-
-# Ignore VS Code nonsense
-c_cpp_properties.json
